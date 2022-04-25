@@ -13,13 +13,23 @@ import {
 
 function App() {
   let initTodo;
+  let todoTheme="";
   if (localStorage.getItem("todos") === null) {
     initTodo = [];
   }
-  else {
+  if (localStorage.getItem("todo_theme") === null) {
+    todoTheme = "dark";
+  }
+  if(localStorage.getItem("todos") !== null){
     initTodo = JSON.parse(localStorage.getItem("todos"));
   }
+  if (localStorage.getItem("todo_theme") !== null) {
+    todoTheme = JSON.parse(localStorage.getItem("todo_theme"));
+  }
 
+  const setTheme = (th) => {
+    settheme(theme, th);
+  };
 
   const onDelete = (todo) => { 
 
@@ -45,15 +55,19 @@ function App() {
     setTodos([...todos, myTodo]);
   }
 
+  const [theme, settheme] = useState(todoTheme);
   const [todos, setTodos] = useState(initTodo);
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos])
+  useEffect(() => {
+    localStorage.setItem("todo_theme", JSON.stringify(theme));
+  }, [theme])
 
   return ( 
     <> 
     <Router>
-      <Header title="TodoList" searchBar={false} /> 
+      <Header title="TodoList" searchBar={false} setTheme={setTheme} theme={theme}/> 
       <Switch>
           <Route exact path="/" render={()=>{
             return(

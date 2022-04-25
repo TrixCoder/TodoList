@@ -23,12 +23,14 @@ export default function Header(props) {
         changeThemeBtn: lightStyle.changeThemeBtn
       })
       setbtntxt("Dark");
+      props.setTheme("light");
     } else {
       setmyStyle({
         navClass: darkStyle.navClass,
         changeThemeBtn: darkStyle.changeThemeBtn
       })
       setbtntxt("Light");
+      props.setTheme("dark");
     }
   }
   return (
