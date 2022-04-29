@@ -33,7 +33,7 @@ function App() {
     setTodos(todos.filter((e) => {
       return e !== todo;
     }));
-    axios.post("http://localhost:5000/updateTodos", { change: "delete", stuff: todo }).catch(err=>console.log(err));
+    axios.post("http://localhost:5000/updateTodos", { change: "delete", stuff: todo }).catch(err => console.log(err));
   }
 
   const addTodo = (title, desc) => {
@@ -52,8 +52,13 @@ function App() {
     setTodos([...todos, myTodo]);
   }
 
+
+  let bgImg = { backgroundImage: `url("./images/background.jpeg")` };
+  let wgImg = { backgroundColor: "white" };
+
   const [theme, settheme] = useState([]);
   const [todos, setTodos] = useState([]);
+  const [background, setBackground] = useState([]);
   useEffect(() => {
     axios.get("http://localhost:5000/getTodos").then((res) => {
       setTodos(res.data);
@@ -62,13 +67,14 @@ function App() {
   useEffect(() => {
     axios.get("http://localhost:5000/getTheme").then((res) => {
       settheme(res.data);
+      setBackground(res.data[0].theme === "Dark" ? bgImg : wgImg);
     })
   }, [theme])
 
   return (
-    <>
+    <div style={background}>
       <Router>
-        <Header title="TodoList" searchBar={false} theme={theme} />
+        <Header title="TodoList" searchBar={false} />
         <Switch>
           <Route exact path="/" render={() => {
             return (
@@ -84,7 +90,7 @@ function App() {
         </Switch>
         <Footer />
       </Router>
-    </>
+    </div>
   );
 }
 

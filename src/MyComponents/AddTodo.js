@@ -1,10 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 const axios = require("axios");
 
 export const AddTodo = ({ addTodo }) => {
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
+    const [theme, settheme] = useState([]);
 
+
+    useEffect(() => {
+        axios.get("http://localhost:5000/getTheme").then((res) => {
+            settheme(res.data);
+        })
+    }, [theme]);
+
+/* To modify for theme
+
+    let darkStyle = {
+        text: {},
+        changeThemeBtn: "btn btn-light"
+    };
+
+    let lightStyle = {
+        navClass: "navbar navbar-expand-lg navbar-light bg-light",
+        changeThemeBtn: "btn btn-dark"
+    };
+
+    const [myStyle, setmyStyle] = useState("");
+    const [btntxt, setbtntxt] = useState("");
+    useEffect(() => {
+        axios.get("http://localhost:5000/getTheme").then((res) => {
+            let darkStyle = {
+                navClass: "navbar navbar-expand-lg navbar-dark bg-dark",
+                changeThemeBtn: "btn btn-light"
+            };
+
+            let lightStyle = {
+                navClass: "navbar navbar-expand-lg navbar-light bg-light",
+                changeThemeBtn: "btn btn-dark"
+            };
+
+            setmyStyle((res.data[0].theme === "Light") ? darkStyle : lightStyle);
+        })
+    }, [myStyle])
+    useEffect(() => {
+        axios.get("http://localhost:5000/getTheme").then((res) => {
+            setbtntxt((res.data[0].theme === "Light") ? "Dark" : "Light");
+        })
+    }, [btntxt])
+
+    */
 
     const submit = (e) => {
         e.preventDefault();
