@@ -14,9 +14,6 @@ export const AddTodo = ({ addTodo }) => {
         else {
             addTodo(title, desc);
             axios.post("http://localhost:5000/todos", { title, desc })
-                .then(res => {
-                    alert(res.data.message);
-                })
                 .catch(err => console.log(err));
             setTitle("");
             setDesc("");

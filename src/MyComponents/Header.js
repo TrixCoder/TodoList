@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types'
 import { Link } from "react-router-dom";
 const axios = require("axios");
@@ -14,25 +14,39 @@ export default function Header(props) {
     changeThemeBtn: "btn btn-dark"
   };
 
-  const styleToUseInH = localStorage.getItem("todo_theme") === "light" ? darkStyle : lightStyle;
-  const TextToUseInB = localStorage.getItem("todo_theme") === "light" ? "Dark" : "Light";
 
-  const [myStyle, setmyStyle] = useState(styleToUseInH);
-  const [btntxt, setbtntxt] = useState(TextToUseInB);
+  const [myStyle, setmyStyle] = useState("");
+  const [btntxt, setbtntxt] = useState("");
+  useEffect(() => {
+    axios.get("http://localhost:5000/getTheme").then((res) => {
+      let darkStyle = {
+        navClass: "navbar navbar-expand-lg navbar-dark bg-dark",
+        changeThemeBtn: "btn btn-light"
+      };
+
+      let lightStyle = {
+        navClass: "navbar navbar-expand-lg navbar-light bg-light",
+        changeThemeBtn: "btn btn-dark"
+      };
+
+      setmyStyle((res.data[0].theme === "Light") ? darkStyle : lightStyle);
+    })
+  }, [myStyle])
+  useEffect(() => {
+    axios.get("http://localhost:5000/getTheme").then((res) => {
+      setbtntxt((res.data[0].theme === "Light") ? "Dark" : "Light");
+    })
+  }, [btntxt])
 
   const changeTheme = () => {
-    if (myStyle.navClass === "navbar navbar-expand-lg navbar-dark bg-dark") {
+    let todoTheme = btntxt === "Light" ? "Dark" : "Light";
+    if (todoTheme === "Dark") {
       setmyStyle({
         navClass: lightStyle.navClass,
         changeThemeBtn: lightStyle.changeThemeBtn
       })
       setbtntxt("Dark");
-      props.setTheme("light");
-      localStorage.setItem("todo_theme", JSON.stringify("light"));
       axios.post("http://localhost:5000/theme", { settheme: "Light", style: { navClass: lightStyle.navClass, changeThemeBtn: lightStyle.changeThemeBtn } })
-        .then(res => {
-          alert(res.data.message);
-        })
         .catch(err => console.log(err));
     } else {
       setmyStyle({
@@ -40,12 +54,7 @@ export default function Header(props) {
         changeThemeBtn: darkStyle.changeThemeBtn
       })
       setbtntxt("Light");
-      props.setTheme("dark");
-      localStorage.setItem("todo_theme", JSON.stringify("dark"));
       axios.post("http://localhost:5000/theme", { settheme: "Dark", style: { navClass: darkStyle.navClass, changeThemeBtn: darkStyle.changeThemeBtn } })
-        .then(res => {
-          alert(res.data.message);
-        })
         .catch(err => console.log(err));
     }
   }
