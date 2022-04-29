@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+const axios = require("axios");
 
 export const AddTodo = ({ addTodo }) => {
     const [title, setTitle] = useState("");
@@ -12,6 +13,11 @@ export const AddTodo = ({ addTodo }) => {
         }
         else {
             addTodo(title, desc);
+            axios.post("http://localhost:5000/todos", { title, desc })
+                .then(res => {
+                    alert(res.data.message);
+                })
+                .catch(err => console.log(err));
             setTitle("");
             setDesc("");
         }

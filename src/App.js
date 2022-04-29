@@ -10,33 +10,30 @@ import {
   Switch,
   Route
 } from "react-router-dom";
+import axios from 'axios';
+
 
 function App() {
   let initTodo;
-  let todoTheme="";
-  if (localStorage.getItem("todos") === null) {
+  let todoTheme = "";
+  axios.get("http://localhost:5000/getTheme").then((res) => {
+    todoTheme = res.data.theme;
+  })
+  axios.get("http://localhost:5000/getTodos").then((res) => {
+    initTodo = res.data;
+  })
+  if (initTodo === null) {
     initTodo = [];
   }
-  if (localStorage.getItem("todo_theme") === null) {
+  if (todoTheme === null) {
     todoTheme = "dark";
   }
-  if(localStorage.getItem("todos") !== null){
-    initTodo = JSON.parse(localStorage.getItem("todos"));
-  }
-  if (localStorage.getItem("todo_theme") !== null) {
-    todoTheme = JSON.parse(localStorage.getItem("todo_theme"));
-  }
 
-  const setTheme = (th) => {
-    settheme(theme, th);
-  };
-
-  const onDelete = (todo) => { 
-
+  const onDelete = (todo) => {
     setTodos(todos.filter((e) => {
       return e !== todo;
     }));
-    localStorage.setItem("todos", JSON.stringify(todos));
+    axios.post("http://localhost:5000/updateTodos", { change: "delete", stuff: todo }).catch(err=>console.log(err));
   }
 
   const addTodo = (title, desc) => {
@@ -55,34 +52,38 @@ function App() {
     setTodos([...todos, myTodo]);
   }
 
-  const [theme, settheme] = useState(todoTheme);
-  const [todos, setTodos] = useState(initTodo);
+  const [theme, settheme] = useState([]);
+  const [todos, setTodos] = useState([]);
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
+    axios.get("http://localhost:5000/getTodos").then((res) => {
+      setTodos(res.data);
+    })
   }, [todos])
   useEffect(() => {
-    localStorage.setItem("todo_theme", JSON.stringify(theme));
+    axios.get("http://localhost:5000/getTheme").then((res) => {
+      settheme(res.data);
+    })
   }, [theme])
 
-  return ( 
-    <> 
-    <Router>
-      <Header title="TodoList" searchBar={false} setTheme={setTheme} theme={theme}/> 
-      <Switch>
-          <Route exact path="/" render={()=>{
-            return(
-            <>
-            <AddTodo addTodo={addTodo} />
-            <Todos todos={todos} onDelete={onDelete} /> 
-            </>)
-          }}> 
+  return (
+    <>
+      <Router>
+        <Header title="TodoList" searchBar={false} theme={theme} />
+        <Switch>
+          <Route exact path="/" render={() => {
+            return (
+              <>
+                <AddTodo addTodo={addTodo} />
+                <Todos todos={todos} onDelete={onDelete} />
+              </>)
+          }}>
           </Route>
           <Route exact path="/about">
             <About />
-          </Route> 
-        </Switch> 
-      <Footer />
-    </Router>
+          </Route>
+        </Switch>
+        <Footer />
+      </Router>
     </>
   );
 }
