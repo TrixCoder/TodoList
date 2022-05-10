@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const About = () => {
+export const About = ({theme}) => {
     return (
         <div>
             This is an about component 

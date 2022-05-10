@@ -60,7 +60,7 @@ app.post('/theme', async (req, res) => {
     if (!findTheme || findTheme == null) {
         let th = new theme({
             theme: settheme,
-            style: style
+            currentStyle: style
         })
         await th.save(err => {
             if (err) {
@@ -68,7 +68,7 @@ app.post('/theme', async (req, res) => {
             }
         });
     } else {
-        await theme.findOneAndUpdate({}, { theme: settheme, style: style }, { useFindAndModify: false });
+        await theme.findOneAndUpdate({}, { theme: settheme, currentStyle: style }, { useFindAndModify: false });
     }
 })
 

@@ -1,4 +1,4 @@
-import './App.css';
+import './styles.js';
 import Header from "./MyComponents/Header";
 import { Todos } from "./MyComponents/Todos";
 import { Footer } from "./MyComponents/Footer";
@@ -10,30 +10,39 @@ import {
   Switch,
   Route
 } from "react-router-dom";
-import axios from 'axios';
-
+import Styles from './styles';
 
 function App() {
   let initTodo;
-  let todoTheme = "";
-  axios.get("http://localhost:5000/getTheme").then((res) => {
-    todoTheme = res.data.theme;
-  })
-  axios.get("http://localhost:5000/getTodos").then((res) => {
-    initTodo = res.data;
-  })
-  if (initTodo === null) {
+  let todoTheme="";
+  if (localStorage.getItem("todos") === null) {
     initTodo = [];
   }
-  if (todoTheme === null) {
+  if (localStorage.getItem("todo_theme") === null) {
     todoTheme = "dark";
   }
+  if(localStorage.getItem("todos") !== null){
+    initTodo = JSON.parse(localStorage.getItem("todos"));
+  }
+  if (localStorage.getItem("todo_theme") !== null) {
+    todoTheme = JSON.parse(localStorage.getItem("todo_theme"));
+  }
 
-  const onDelete = (todo) => {
+  const setTheme = (th) => {
+    settheme(theme, th);
+    setBackground(th === "light" ? Styles.bgImg : Styles.wgImg);
+    if(th === "light"){
+      setmyStyle(Styles.makeTextWhite);
+    }else if(th === "dark"){
+      setmyStyle(Styles.makeTextBlack);
+    }
+  };
+
+  const onDelete = (todo) => { 
     setTodos(todos.filter((e) => {
       return e !== todo;
     }));
-    axios.post("http://localhost:5000/updateTodos", { change: "delete", stuff: todo }).catch(err => console.log(err));
+    localStorage.setItem("todos", JSON.stringify(todos));
   }
 
   const addTodo = (title, desc) => {
@@ -52,44 +61,40 @@ function App() {
     setTodos([...todos, myTodo]);
   }
 
+  const [theme, settheme] = useState(todoTheme);
+  const [myStyle, setmyStyle] = useState(theme === "light" ? Styles.makeTextWhite:Styles.makeTextBlack);
+  const [todos, setTodos] = useState(initTodo);
 
-  let bgImg = { backgroundImage: `url("./images/background.jpeg")` };
-  let wgImg = { backgroundColor: "white" };
+  const [background, setBackground] = useState(todoTheme === "light" ? Styles.bgImg : Styles.wgImg);
 
-  const [theme, settheme] = useState([]);
-  const [todos, setTodos] = useState([]);
-  const [background, setBackground] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:5000/getTodos").then((res) => {
-      setTodos(res.data);
-    })
+    localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos])
   useEffect(() => {
-    axios.get("http://localhost:5000/getTheme").then((res) => {
-      settheme(res.data);
-      setBackground(res.data[0].theme === "Dark" ? bgImg : wgImg);
-    })
-  }, [theme])
+    localStorage.setItem("todo_theme", JSON.stringify(theme));
+    setBackground(theme === "light" ? Styles.bgImg : Styles.wgImg);
+  }, [theme]); 
 
-  return (
-    <div style={background}>
-      <Router>
-        <Header title="TodoList" searchBar={false} />
-        <Switch>
-          <Route exact path="/" render={() => {
-            return (
-              <>
-                <AddTodo addTodo={addTodo} />
-                <Todos todos={todos} onDelete={onDelete} />
-              </>)
-          }}>
+  console.log(myStyle);
+  return ( 
+    <div style={background}> 
+    <Router>
+      <Header title="TodoList" searchBar={false} setTheme={setTheme} theme={theme}/> 
+      <Switch>
+          <Route exact path="/" render={()=>{
+            return(
+            <div>
+            <AddTodo addTodo={addTodo} myStyle={myStyle} setmyStyle={setmyStyle}/>
+            <Todos todos={todos} onDelete={onDelete} myStyle={myStyle} setmyStyle={setmyStyle}/> 
+            </div>)
+          }}> 
           </Route>
           <Route exact path="/about">
-            <About />
-          </Route>
-        </Switch>
-        <Footer />
-      </Router>
+            <About myStyle={myStyle} setmyStyle={setmyStyle}/>
+          </Route> 
+        </Switch> 
+      <Footer />
+    </Router>
     </div>
   );
 }

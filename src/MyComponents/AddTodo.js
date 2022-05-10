@@ -1,70 +1,24 @@
-import React, { useState, useEffect } from 'react';
-const axios = require("axios");
+import React, { useEffect, useState } from 'react';
+import Styles from "./../styles";
 
-export const AddTodo = ({ addTodo }) => {
+export const AddTodo = (props) => {
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
-    const [theme, settheme] = useState([]);
-
-
-    useEffect(() => {
-        axios.get("http://localhost:5000/getTheme").then((res) => {
-            settheme(res.data);
-        })
-    }, [theme]);
-
-/* To modify for theme
-
-    let darkStyle = {
-        text: {},
-        changeThemeBtn: "btn btn-light"
-    };
-
-    let lightStyle = {
-        navClass: "navbar navbar-expand-lg navbar-light bg-light",
-        changeThemeBtn: "btn btn-dark"
-    };
-
-    const [myStyle, setmyStyle] = useState("");
-    const [btntxt, setbtntxt] = useState("");
-    useEffect(() => {
-        axios.get("http://localhost:5000/getTheme").then((res) => {
-            let darkStyle = {
-                navClass: "navbar navbar-expand-lg navbar-dark bg-dark",
-                changeThemeBtn: "btn btn-light"
-            };
-
-            let lightStyle = {
-                navClass: "navbar navbar-expand-lg navbar-light bg-light",
-                changeThemeBtn: "btn btn-dark"
-            };
-
-            setmyStyle((res.data[0].theme === "Light") ? darkStyle : lightStyle);
-        })
-    }, [myStyle])
-    useEffect(() => {
-        axios.get("http://localhost:5000/getTheme").then((res) => {
-            setbtntxt((res.data[0].theme === "Light") ? "Dark" : "Light");
-        })
-    }, [btntxt])
-
-    */
-
+    let myStyle = props.myStyle;
+    
     const submit = (e) => {
         e.preventDefault();
         if (!title || !desc) {
             alert("Title or Description cannot be blank");
         }
         else {
-            addTodo(title, desc);
-            axios.post("http://localhost:5000/todos", { title, desc })
-                .catch(err => console.log(err));
+            props.addTodo(title, desc);
             setTitle("");
             setDesc("");
         }
     }
     return (
-        <div className="container my-3">
+        <div className="container my-3" style={myStyle}>
             <h3>Add a Todo</h3>
             <form onSubmit={submit}>
                 <div className="mb-3">
@@ -72,7 +26,7 @@ export const AddTodo = ({ addTodo }) => {
                     <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="form-control" id="title" aria-describedby="emailHelp" />
 
                 </div>
-                <div className="mb-3">
+                <div className="mb-3" style={myStyle}>
                     <label htmlFor="desc" className="form-label">Todo Description</label>
                     <input type="text" value={desc} onChange={(e) => setDesc(e.target.value)} className="form-control" id="desc" />
                 </div>
