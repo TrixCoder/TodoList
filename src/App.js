@@ -20,6 +20,7 @@ function App() {
   }
   if (localStorage.getItem("todo_theme") === null) {
     todoTheme = "dark";
+
   }
   if(localStorage.getItem("todos") !== null){
     initTodo = JSON.parse(localStorage.getItem("todos"));
@@ -75,7 +76,6 @@ function App() {
     setBackground(theme === "light" ? Styles.bgImg : Styles.wgImg);
   }, [theme]); 
 
-  console.log(myStyle);
   return ( 
     <div style={background}> 
     <Router>

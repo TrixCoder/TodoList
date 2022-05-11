@@ -1,2 +1,8 @@
 # TodoList
-My first reactjs project
+
+## Usage:
+* Add todos
+* Switch between dark theme and light theme
+---
+## Conclusion:
+<img src="./image.png">
